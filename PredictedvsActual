@@ -1,0 +1,32 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Original data
+time = [0, 20, 30, 40, 60, 90, 120, 150, 270, 300, 470, 500]
+predicted_moisture_1 = [5.0056, 3.4767, 2.4665, 2.4584, 2.5153, 1.3069, 1.2747, 0.9097, 0.6075, 0.5700, 0.2030, 0.2154]
+measured_moisture_1 = [5.5274, 3.1820, 3.0320, 2.2468, 1.7395, 1.8369, 1.2104, 0.9298, 0.6005, 0.5500, 0.2230, 0.1948]
+
+# New replicate data
+predicted_moisture_2 = [5.026, 3.277, 2.12, 2.158, 2.215, 1.107, 1.245, 0.850, 0.638, 0.530, 0.212, 0.200]
+measured_moisture_2 = [5.327, 3.182, 3.032, 2.37, 1.540, 1.537, 1.120, 0.900, 0.631, 0.540, 0.220, 0.183]
+
+# Calculate means and standard deviations
+predicted_mean = np.mean([predicted_moisture_1, predicted_moisture_2], axis=0)
+measured_mean = np.mean([measured_moisture_1, measured_moisture_2], axis=0)
+predicted_std = np.std([predicted_moisture_1, predicted_moisture_2], axis=0)
+measured_std = np.std([measured_moisture_1, measured_moisture_2], axis=0)
+
+# Create the plot
+plt.figure(figsize=(12, 8))
+plt.errorbar(time, predicted_mean, yerr=predicted_std, fmt='o-', label='Predicted Moisture (Mean ± SD)', color='blue')
+plt.errorbar(time, measured_mean, yerr=measured_std, fmt='s-', label='Measured Moisture (Mean ± SD)', color='red')
+
+# Add labels and title
+plt.xlabel('Time (min)')
+plt.ylabel('Moisture (d.b) %')
+plt.title('Predicted vs Measured Moisture Content')
+plt.legend()
+plt.grid(True)
+
+# Show the plot
+plt.show()
