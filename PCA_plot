@@ -1,0 +1,69 @@
+% Define wavelengths (based on the image provided)
+wavelengths = 1550:5:1945; % This generates a vector from 1550 to 1945 with a step of 5
+
+% Verify lengths
+length_wavelengths = length(wavelengths);
+size_intensity = size(intensity);
+
+if length_wavelengths ~= size_intensity(2)
+    error('Wavelength vector length and intensity data columns do not match.');
+end
+
+% Normalize the data by subtracting the mean
+intensity_mean = mean(intensity);
+intensity_centered = intensity - intensity_mean;
+
+% Perform Singular Value Decomposition (SVD)
+[U, S, V] = svd(intensity_centered, 'econ');
+
+% Calculate principal components
+coeff = V;
+score = U * S;
+latent = diag(S).^2 / (size(intensity_centered, 1) - 1);
+explained = 100 * latent / sum(latent);
+
+% Define the labels
+labels = {'0', '10', '20', '30', '40', '50', '60', '90', '120', '150', '180', '210', '270', '300', '400', '470', '500'};
+
+% Define colors for each data point
+colors = {'b', 'g', 'r', 'c', 'm', 'y', 'k', 'b', 'g', 'r', 'c', 'm', 'y', 'k', 'b', 'g', 'r'};
+
+% Plot the PCA scores for the first two principal components
+figure;
+hold on;
+for i = 1:size(score, 1)
+    scatter(score(i, 1), score(i, 2), 100, 'filled', 'MarkerFaceColor', colors{i});
+    text(score(i, 1), score(i, 2), labels{i}, 'VerticalAlignment', 'bottom', 'HorizontalAlignment', 'right');
+end
+hold off;
+xlabel(['Principal Component 1 (' num2str(explained(1), '%.2f') '%)']);
+ylabel(['Principal Component 2 (' num2str(explained(2), '%.2f') '%)']);
+title('PCA Scores Plot');
+grid on;
+
+% Add a legend indicating that each dot represents a drying time
+legendText = 'Each dot represents a drying time';
+legendObj = legend(legendText, 'Location', 'north');
+set(legendObj, 'FontSize', 12);
+
+% Save the PCA scores plot to a file
+saveas(gcf, 'pca_scores_plot.png');
+
+% Plot the PCA loadings for the first two principal components
+figure;
+plot(wavelengths, coeff(:, 1), 'r', 'LineWidth', 2);
+hold on;
+plot(wavelengths, coeff(:, 2), 'b', 'LineWidth', 2);
+hold off;
+xlabel('Wavelength (nm)');
+ylabel('Loading');
+title('PCA Loadings Plot');
+legend({'PC1', 'PC2'}, 'Location', 'best');
+grid on;
+
+% Save the PCA loadings plot to a file
+saveas(gcf, 'pca_loadings_plot.png');
+
+% Show the plots
+% Uncomment the following lines if you want to display the plots in separate windows
+% uiwait(gcf);
